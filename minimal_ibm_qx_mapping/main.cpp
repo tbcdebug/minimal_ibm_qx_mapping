@@ -31,7 +31,7 @@ unsigned int costIBMQX4(std::vector<int>& pi) {
 	for (int i : pi) {
 		pi_name << i;
 	}
-	const int COST_PER_SWAP = 7;
+	const int COST_PER_SWAP = 1;
 	switch (std::stoi(pi_name.str())) {
 		case 1234:
 			return 0;
@@ -84,12 +84,18 @@ const CouplingMap ibmQX4 = {
 		{ 2, 1 },
 		{ 3, 2 },
 		{ 3, 4 },
-		{ 2, 4 }
+		{ 2, 4 },
+	//	{0, 1},
+	//	{0, 2},
+	//	{1, 2},
+	//	{2, 3},
+	//	{4, 3},
+	//	{4, 2}
 };
 
 int main(int argc, const char * argv[]) {
 
-	unsigned int timeout = 3600000; // 60min timeout
+	unsigned int timeout = 360000000; // 60min timeout
 	std::vector<int> physicalQubits = { 0, 1, 2, 3, 4 };
 
 	MappingSettings settings = MappingSettings();
@@ -103,6 +109,7 @@ int main(int argc, const char * argv[]) {
 	std::cout << "################### Basis ###################" << std::endl;
 	MappingResults basis = Circuit::run(filename, timeout, ibmQX4, physicalQubits, costIBMQX4, settings);
 
+	/*
 	std::cout << "################### Basis Reduced ###################" << std::endl;
 	settings.considerQubitSubsets();
 	MappingResults basisReduced = Circuit::run(filename, timeout, ibmQX4, physicalQubits, costIBMQX4, settings);
@@ -118,6 +125,6 @@ int main(int argc, const char * argv[]) {
 	std::cout << "################### Qubit Triangle ###################" << std::endl;
 	settings.useQubitTriangleStrategy();
 	MappingResults triangle = Circuit::run(filename, timeout, ibmQX4, physicalQubits, costIBMQX4, settings);
-
+	*/
     return 0;
 }

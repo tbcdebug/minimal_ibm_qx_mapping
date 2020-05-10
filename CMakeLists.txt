@@ -22,6 +22,10 @@ year={2019}
 cmake_minimum_required(VERSION 3.13)
 project(minimal_mapping)
 
+# customize z3 include path
+# Z3PATH=/home/bctan/anaconda3/lib/python3.7/site-packages/z3/include
+# target_include_directories($Z3PATH)
+
 add_executable(minimal_mapping
                minimal_ibm_qx_mapping/Circuit.cpp
                minimal_ibm_qx_mapping/Circuit.hpp
@@ -31,12 +35,14 @@ add_executable(minimal_mapping
                parser/QASMtoken.cpp
                parser/QASMparser.h
                parser/QASMscanner.hpp
-               parser/QASMtoken.hpp)
+               parser/QASMtoken.hpp
+	       /home/bctan/anaconda3/lib/python3.7/site-packages/z3/include/z3++.h)
 
 set_property(TARGET minimal_mapping PROPERTY CXX_STANDARD 11)
 set_property(TARGET minimal_mapping PROPERTY CXX_EXTENSIONS OFF)
 target_compile_options(minimal_mapping PRIVATE -DNDEBUG -g -mtune=native -march=native -pipe -flto)
 
-target_include_directories(minimal_mapping PUBLIC /usr/local/include minimal_ibm_qx_mapping parser)
-target_link_directories(minimal_mapping PUBLIC /usr/local/lib)
+
+target_include_directories(minimal_mapping PUBLIC /usr/local/include /home/bctan/anaconda3/lib/python3.7/site-packages/z3/include minimal_ibm_qx_mapping parser)
+target_link_directories(minimal_mapping PUBLIC /usr/local/lib /home/bctan/anaconda3/lib/python3.7/site-packages/z3/lib)
 target_link_libraries(minimal_mapping z3)

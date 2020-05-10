@@ -20,6 +20,7 @@ by citing the following publication:
 */
 
 #include "Circuit.hpp"
+#include <iostream>
 
 /// Static driver routine
 /// \param filename QASM-file to read circuit from
@@ -229,6 +230,7 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
 	// Z3 context
 	context c;
 
+	// expr obj = c.int_const("obj");
 	//////////////////////////////////////////
 	/// 	Boolean Variable Definitions	//
 	//////////////////////////////////////////
@@ -420,13 +422,16 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
 	}
 
     // cost for reversed directions
+    
     int gateIdx = 0;
+    /*
     for(const auto& layer: layers) {
         for (const auto &gate: layer) {
             opt.add(not(z[gateIdx]), 4);
             gateIdx++;
         }
     }
+    */
 
 	//////////////////////////////////////////
 	/// 	Solving							//
@@ -438,7 +443,12 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
 	results.nrGatesReducedCurcuit = nrGates;
 
 	if (sat == opt.check()) {
+		// objectives obj = opt.get_objectives();
+		// std::cout << "assertions" << std::endl << opt.assertions() << std::endl << "objectives" << std::endl <<  opt.objectives() << std::endl << "statistics" << std::endl;
+		std::cout << "----------------stats--------------" << std::endl <<  opt.statistics() << std::endl;
 		model m = opt.get_model();
+		// std::cout << "-------------------------opt " << opt.m_opt << " ctx " << opt.m_ctx << std::endl;
+
 		results.timeout = false;
 
 		for (int k=0; k<nrLayers; k++) {
@@ -483,7 +493,7 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
         for (const auto& layer: layers) {
 			for (const auto& gate: layer) {
 				results.Z.push_back((eq(m.eval(z[gateIdx]), c.bool_val(true))? 1 : 0));
-                reverseCost += eq(m.eval(z[gateIdx]), c.bool_val(true)) ? 4 : 0;
+                reverseCost += eq(m.eval(z[gateIdx]), c.bool_val(true)) ? 1 : 0;
 				gateIdx++;
 			}
 		}
