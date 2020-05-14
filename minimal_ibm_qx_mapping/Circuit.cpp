@@ -386,7 +386,7 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
 		for (int m = 0; m < layers[k].size(); m++) {
 			expr reverse = c.bool_val(false);
 			for(auto edge: cm) {
-				reverse = reverse or (x[idx(k, edge.first, layers[k][m].target)] and reverse = reverse or (
+				reverse = reverse or (x[idx(k, edge.first, layers[k][m].target)] and
 									  x[idx(k, edge.second, layers[k][m].control)]);
 			}
 			opt.add(z[g] == reverse.simplify());
