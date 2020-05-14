@@ -382,12 +382,15 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
 	/// 	Direction Reverse Constraints	//
 	//////////////////////////////////////////
 	int g = 0;
-	for (int k=0; k<nrLayers; k++) {
+	for (int k=1; k<nrLayers; k++) {
 		for (int m = 0; m < layers[k].size(); m++) {
 			expr reverse = c.bool_val(false);
 			for(auto edge: cm) {
-				reverse = reverse or (x[idx(k, edge.first, layers[k][m].target)] and
-									  x[idx(k, edge.second, layers[k][m].control)]);
+				reverse = reverse or (
+										(x[idx(k - 1, edge.first, layers[k][m].target)] and
+									   x[idx(k - 1, edge.second, layers[k][m].control)]) and
+										(x[idx(k, edge.second, layers[k][m].target)] and
+										 x[idx(k, edge.first, layers[k][m].control)]));
 			}
 			opt.add(z[g] == reverse.simplify());
 			g++;
@@ -422,16 +425,14 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
 	}
 
     // cost for reversed directions
-    
+
     int gateIdx = 0;
-    /*
     for(const auto& layer: layers) {
         for (const auto &gate: layer) {
             opt.add(not(z[gateIdx]), 4);
             gateIdx++;
         }
     }
-    */
 
 	//////////////////////////////////////////
 	/// 	Solving							//
@@ -447,8 +448,9 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
 		// std::cout << "assertions" << std::endl << opt.assertions() << std::endl << "objectives" << std::endl <<  opt.objectives() << std::endl << "statistics" << std::endl;
 		std::cout << "----------------stats--------------" << std::endl <<  opt.statistics() << std::endl;
 		model m = opt.get_model();
-		// std::cout << "-------------------------opt " << opt.m_opt << " ctx " << opt.m_ctx << std::endl;
-
+		std::cout << "----------------obj-------------- " << std::endl;
+		for (auto o : opt.objectives())
+            		std::cout << m.eval(o) << "\n";
 		results.timeout = false;
 
 		for (int k=0; k<nrLayers; k++) {
@@ -482,7 +484,7 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
                 }
 				if (eq(m.eval(y[(k-1)*n+piCnt]), c.bool_val(true))) {
 					results.Y.push_back(pi);
-                    swapCost += cost(augmentedPi);
+                  			 swapCost += cost(augmentedPi);
 				}
 				piCnt++;
 			} while(std::next_permutation(pi.begin(), pi.end()));
@@ -493,7 +495,8 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
         for (const auto& layer: layers) {
 			for (const auto& gate: layer) {
 				results.Z.push_back((eq(m.eval(z[gateIdx]), c.bool_val(true))? 1 : 0));
-                reverseCost += eq(m.eval(z[gateIdx]), c.bool_val(true)) ? 1 : 0;
+               			reverseCost += eq(m.eval(z[gateIdx]), c.bool_val(true)) ? 4 : 0;
+				// reverseCost += eq(m.eval(z[gateIdx]), c.bool_val(true)) ? 4 : 0;
 				gateIdx++;
 			}
 		}
