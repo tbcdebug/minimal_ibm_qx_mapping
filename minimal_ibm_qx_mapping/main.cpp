@@ -27,6 +27,8 @@ by citing the following publication:
 #include <map>
 #include <time.h>
 
+
+/*
 /// Cost of permutations on IBM QX2/QX4 architecture.
 /// \param pi permutation
 /// \return cost of permutation (=7*numberOfSwaps)
@@ -90,79 +92,50 @@ const CouplingMap ibmQX4 = {
 		{ 3, 4 }, {4, 3},
 		{ 2, 4 }, {4, 2}
 };
-
-
-
-
-
-
-const CouplingMap melbourne = {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7},
-                                    {0, 8}, {1, 9}, {2, 10}, {3, 11}, {4, 12}, {5, 13}, {6, 14}, {7, 15},
-                                    {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13}, {13, 14}, {14, 15}};
+std::vector<std::vector<int> > connections = {{0, 1}, {1, 2}, {2, 0}, {3, 4}, {4, 2}, {2, 3}};
+std::vector<int> physicalQubits = { 0, 1, 2, 3, 4};
+int n_qubit = 5; // qubit count
+*/
 
 
 // Daniel Tan
-class Graph
-{
-    long long V;    // No. of vertices
-    std::list<long long> *adj; // Pointer to an array containing adjacency lists
 
-public:
-    Graph(long long V);
-    void addEdge(long long v, long long w);
-    void BFS(long long s, std::map< std::vector<int>, int >& cost, std::map<long long, std::vector<int> > topi);
-};
+/*
+// Rigetti agave device
+const CouplingMap biconnections = {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 0},
+														{1, 0}, {2, 1}, {3, 2}, {4, 3}, {5, 4}, {0, 5}};
+std::vector<std::vector<int> > connections = {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 0}};
+std::vector<int> physicalQubits = { 0, 1, 2, 3, 4, 5};
+int n_qubit = 6; // qubit count
+*/
 
-Graph::Graph(long long V)
-{
-    this->V = V;
-    adj = new std::list<long long>[V];
-}
 
-void Graph::addEdge(long long v, long long w)
-{
-    adj[v].push_back(w);
-    adj[w].push_back(v);
-}
+/*
+// grid2by3
+const CouplingMap biconnections = {{0, 1}, {1, 2}, {0, 3}, {1, 4}, {2, 5}, {3, 4}, {4, 5},
+															{1, 0}, {2, 1}, {3, 0}, {4, 1}, {5, 2}, {4, 3}, {5, 4}};
+std::vector<std::vector<int> > connections = {{0, 1}, {1, 2}, {0, 3}, {1, 4}, {2, 5}, {3, 4}, {4, 5}};
+std::vector<int> physicalQubits = {0, 1, 2, 3, 4, 5};
+int n_qubit = 6; // qubit count
+*/
 
-void Graph::BFS(long long s, std::map<std::vector<int>, int>& cost, std::map<long long, std::vector<int> > topi)
-{
-    // Mark all the vertices as not visited
-    bool *visited = new bool[V];
-    for(long long i = 0; i < V; i++)
-        visited[i] = false;
 
-    // Create a queue for BFS
-    std::list<long long> queue;
+/*
+// grid2by3plus
+const CouplingMap biconnections = {{0, 1}, {1, 2}, {0, 3}, {1, 4}, {2, 5}, {3, 4}, {4, 5}, {5, 6},
+																	 {1, 0}, {2, 1}, {3, 0}, {4, 1}, {5, 2}, {4, 3}, {5, 4}, {6, 5}};
+std::vector<std::vector<int> > connections = {{0, 1}, {1, 2}, {0, 3}, {1, 4}, {2, 5}, {3, 4}, {4, 5}, {5, 6}};
+std::vector<int> physicalQubits = {0, 1, 2, 3, 4, 5, 6};
+int n_qubit = 7; // qubit count
+*/
 
-    // Mark the current node as visited and enqueue it
-    visited[s] = true;
-    queue.push_back(s);
-    cost[topi[s]] = 0;
 
-    // 'i' will be used to get all adjacent
-    // vertices of a vertex
-    std::list<long long>::iterator i;
-
-    while (!queue.empty()) {
-        // Dequeue a vertex from queue and print it
-        s = queue.front();
-        // std::cout << s << " ";
-        queue.pop_front();
-        int curr_cost = cost[topi[s]];
-
-        // Get all adjacent vertices of the dequeued
-        // vertex s. If a adjacent has not been visited,
-        // then mark it visited and enqueue it
-        for (i = adj[s].begin(); i != adj[s].end(); ++i)
-            if (!visited[*i]) {
-            	visited[*i] = true;
-                queue.push_back(*i);
-                cost[topi[*i]] = curr_cost + 1;
-            }
-    }
-}
-
+// grid2by4
+const CouplingMap biconnections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7},
+															     {1, 0}, {2, 1}, {3, 2}, {4, 0}, {5, 1}, {6, 2}, {7, 3}, {5, 4}, {6, 5}, {7, 6}};
+std::vector<std::vector<int> > connections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7}};
+std::vector<int> physicalQubits = {0, 1, 2, 3, 4, 5, 6, 7};
+int n_qubit = 8; // qubit count
 
 std::map<std::vector<int>, int> picost;
 std::map<std::vector<int>, long long> pinum;
@@ -179,7 +152,7 @@ int main(int argc, const char * argv[]) {
 	clock_t begin = clock();
 
 	unsigned int timeout = 360000000; // 60min timeout
-	std::vector<int> physicalQubits = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
 
 	MappingSettings settings = MappingSettings();
 	std::string filename = "../testExample.qasm";
@@ -188,12 +161,6 @@ int main(int argc, const char * argv[]) {
 	if (argc == 2) {
 		filename = argv[1];
 	}
-
-
-	int n_qubit = 16; // qubit count
-	std::vector<std::vector<int> > connections = {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7},
-	                                    {0, 8}, {1, 9}, {2, 10}, {3, 11}, {4, 12}, {5, 13}, {6, 14}, {7, 15},
-	                                    {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13}, {13, 14}, {14, 15}};
 
 
 	long long n_pi = 1; // permutation count
@@ -214,35 +181,46 @@ int main(int argc, const char * argv[]) {
 		num++;
 	} while (std::next_permutation(origin.begin(), origin.end()));
 
-	Graph pigraph(n_pi);
-	for (long long i = 0; i < n_pi; ++i)
-		for (long long j = i + 1; j < n_pi; ++j)
-			for (int k = 0; k < connections.size(); ++k) {
-				std::vector<int> tmp = numpi[i];
-				int q = tmp[connections[k][0]];
-				tmp[connections[k][0]] = tmp[connections[k][1]];
-				tmp[connections[k][1]] = q;
-				if (tmp == numpi[j]) {
-					pigraph.addEdge(i, j);
-					break;
-				}
+	// Mark all the vertices as not visited
+    bool *visited = new bool[n_pi];
+    for(long long i = 0; i < n_pi; i++)
+        visited[i] = false;
 
-			}
+    // Create a queue for BFS
+    std::list<long long> queue;
 
-	pigraph.BFS(0, picost, numpi);
-	/*for (long long i = 0; i < n_pi; ++i) {
-		std::vector<int> pi = numpi[i];
-		std::cout << i << ' ';
-		for (int j = 0; j < pi.size(); ++j)
-			std::cout << pi[j];
-		std::cout << ' ' << picost[pi] << std::endl;
-	}
-	*/
+    // Mark the current node as visited and enqueue it
+    visited[0] = true;
+    queue.push_back(0);
+    picost[numpi[0]] = 0;
+
+
+    while (!queue.empty()) {
+        // Dequeue a vertex from queue and print it
+        long long s = queue.front();
+        // std::cout << s << " ";
+        queue.pop_front();
+        int curr_cost = picost[numpi[s]];
+
+        for (int k = 0; k < connections.size(); ++k) {
+			std::vector<int> tmp = numpi[s];
+			int q = tmp[connections[k][0]];
+			tmp[connections[k][0]] = tmp[connections[k][1]];
+			tmp[connections[k][1]] = q;
+			long long tmpnum = pinum[tmp];
+			if (!visited[tmpnum]) {
+            	visited[tmpnum] = true;
+                queue.push_back(tmpnum);
+                picost[tmp] = curr_cost + 1;
+            }
+		}          
+    }
+
 	clock_t mid = clock();
 	std::cout << "preprocessing time: " << (double)(mid - begin) / CLOCKS_PER_SEC << 's' << std::endl;
 
 	std::cout << "################### Basis ###################" << std::endl;
-	MappingResults basis = Circuit::run(filename, timeout, melbourne, physicalQubits, mycost, settings);
+	MappingResults basis = Circuit::run(filename, timeout, biconnections, physicalQubits, mycost, settings);
 
 	/*
 	std::cout << "################### Basis Reduced ###################" << std::endl;
