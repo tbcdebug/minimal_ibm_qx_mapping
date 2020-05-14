@@ -133,8 +133,8 @@ struct MappingResults {
 			std::cout << q << " ";
 		std::cout << "\n";
 
-		std::cout << "swapCost: " << swapCost << " (the number of swap happened * number of cx each swap)"  << std::endl;
-		std::cout << "reverseCost: " << reverseCost << " (the number of reverse happend)"  << std::endl;
+		std::cout << "swapCost: " << swapCost << std::endl;
+		std::cout << "reverseCost: " << reverseCost << std::endl;
 		// std::cout << "totalCost: " << totalCost << std::endl;
 		std::cout << "nrGatesMappedCurcuit: " << nrGatesMappedCurcuit << std::endl;
         std::cout << "nrAllGatesMappedCurcuit: " << nrAllGatesMappedCurcuit << std::endl;

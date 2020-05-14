@@ -382,15 +382,12 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
 	/// 	Direction Reverse Constraints	//
 	//////////////////////////////////////////
 	int g = 0;
-	for (int k=1; k<nrLayers; k++) {
+	for (int k=0; k<nrLayers; k++) {
 		for (int m = 0; m < layers[k].size(); m++) {
 			expr reverse = c.bool_val(false);
 			for(auto edge: cm) {
-				reverse = reverse or (
-										(x[idx(k - 1, edge.first, layers[k][m].target)] and
-									   x[idx(k - 1, edge.second, layers[k][m].control)]) and
-										(x[idx(k, edge.second, layers[k][m].target)] and
-										 x[idx(k, edge.first, layers[k][m].control)]));
+				reverse = reverse or (x[idx(k, edge.first, layers[k][m].target)] and reverse = reverse or (
+									  x[idx(k, edge.second, layers[k][m].control)]);
 			}
 			opt.add(z[g] == reverse.simplify());
 			g++;
@@ -495,8 +492,7 @@ MappingResults Circuit::mapping(const CouplingMap& cm, const std::function< unsi
         for (const auto& layer: layers) {
 			for (const auto& gate: layer) {
 				results.Z.push_back((eq(m.eval(z[gateIdx]), c.bool_val(true))? 1 : 0));
-               			reverseCost += eq(m.eval(z[gateIdx]), c.bool_val(true)) ? 4 : 0;
-				// reverseCost += eq(m.eval(z[gateIdx]), c.bool_val(true)) ? 4 : 0;
+				reverseCost += eq(m.eval(z[gateIdx]), c.bool_val(true)) ? 4 : 0;
 				gateIdx++;
 			}
 		}
