@@ -130,12 +130,6 @@ int n_qubit = 7; // qubit count
 */
 
 
-// grid2by4
-const CouplingMap biconnections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7},
-															     {1, 0}, {2, 1}, {3, 2}, {4, 0}, {5, 1}, {6, 2}, {7, 3}, {5, 4}, {6, 5}, {7, 6}};
-std::vector<std::vector<int> > connections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7}};
-std::vector<int> physicalQubits = {0, 1, 2, 3, 4, 5, 6, 7};
-int n_qubit = 8; // qubit count
 
 std::map<std::vector<int>, int> picost;
 std::map<std::vector<int>, long long> pinum;
@@ -156,11 +150,79 @@ int main(int argc, const char * argv[]) {
 
 	MappingSettings settings = MappingSettings();
 	std::string filename = "../testExample.qasm";
+	std::string devicename = "grid2by4";
 
 	// Use filename from command line, if specified
-	if (argc == 2) {
+	if (argc == 3) {
 		filename = argv[1];
+		devicename = argv[2];
 	}
+
+	// grid2by4
+	CouplingMap biconnections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7},
+																     {1, 0}, {2, 1}, {3, 2}, {4, 0}, {5, 1}, {6, 2}, {7, 3}, {5, 4}, {6, 5}, {7, 6}};
+	std::vector<std::vector<int> > connections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7}};
+	std::vector<int> physicalQubits = {0, 1, 2, 3, 4, 5, 6, 7};
+	int n_qubit = 8; // qubit count
+
+
+	// decide the device
+	if (devicename == "tokyopart1") {
+		biconnections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {1, 6}, {2, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7},
+																	     {1, 0}, {2, 1}, {3, 2}, {4, 0}, {5, 1}, {6, 1}, {5, 2}, {6, 2}, {7, 3}, {5, 4}, {6, 5}, {7, 6}};
+		connections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {1, 6}, {2, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7}};
+		physicalQubits = {0, 1, 2, 3, 4, 5, 6, 7};
+		n_qubit = 8; // qubit count
+	}
+	else if (devicename == "tokyopart2") {
+		biconnections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {0, 5}, {1, 4}, {1, 5}, {2, 6}, {2, 7}, {3, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7},
+																	     {1, 0}, {2, 1}, {3, 2}, {4, 0}, {5, 0}, {4, 1}, {5, 1}, {6, 2}, {7, 2}, {6, 3}, {7, 3}, {5, 4}, {6, 5}, {7, 6}};
+		connections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {0, 5}, {1, 4}, {1, 5}, {2, 6}, {2, 7}, {3, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7}};
+		physicalQubits = {0, 1, 2, 3, 4, 5, 6, 7};
+		n_qubit = 8; // qubit count
+	}
+	else if (devicename == "ibmqx2") {
+		biconnections = {
+				{ 1, 0 }, {0, 1},
+				{ 2, 0 }, {0, 2},
+				{ 2, 1 }, {1, 2},
+				{ 3, 2 }, {2, 3},
+				{ 3, 4 }, {4, 3},
+				{ 2, 4 }, {4, 2}};
+		connections = {{0, 1}, {1, 2}, {2, 0}, {3, 4}, {4, 2}, {2, 3}};
+		physicalQubits = { 0, 1, 2, 3, 4};
+		n_qubit = 5; // qubit count
+	}
+	else if (devicename == "aspen4") {
+		biconnections = {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7},
+									 	 {0, 8}, {3, 11}, {4, 12}, {7, 15},
+									 	 {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13}, {13, 14}, {14, 15},
+									   {1, 0}, {2, 1}, {3, 2}, {4, 3}, {5, 4}, {6, 5}, {7, 6},
+									   {8, 0}, {11, 3}, {12, 4}, {15, 7},
+									   {9, 8}, {10, 9}, {11, 10}, {12, 11}, {13, 12}, {14, 13}, {15, 14}};
+		connections = {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7},
+									 {0, 8}, {3, 11}, {4, 12}, {7, 15},
+									 {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13}, {13, 14}, {14, 15}};
+		n_qubit = 16;
+		physicalQubits = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+	}
+	else if (devicename == "grid2by3") {
+		biconnections = {{0, 1}, {1, 2}, {0, 3}, {1, 4}, {2, 5}, {3, 4}, {4, 5},
+										 {1, 0}, {2, 1}, {3, 0}, {4, 1}, {5, 2}, {4, 3}, {5, 4}};
+		connections = {{0, 1}, {1, 2}, {0, 3}, {1, 4}, {2, 5}, {3, 4}, {4, 5}};
+		physicalQubits = { 0, 1, 2, 3, 4, 5};
+		n_qubit = 6;
+	}
+	else {
+		biconnections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7},
+																	     {1, 0}, {2, 1}, {3, 2}, {4, 0}, {5, 1}, {6, 2}, {7, 3}, {5, 4}, {6, 5}, {7, 6}};
+		connections = {{0, 1}, {1, 2}, {2, 3}, {0, 4}, {1, 5}, {2, 6}, {3, 7}, {4, 5}, {5, 6}, {6, 7}};
+		physicalQubits = {0, 1, 2, 3, 4, 5, 6, 7};
+		n_qubit = 8; // qubit count
+		devicename == "grid2by4";
+	}
+
+
 
 
 	long long n_pi = 1; // permutation count
@@ -213,7 +275,7 @@ int main(int argc, const char * argv[]) {
                 queue.push_back(tmpnum);
                 picost[tmp] = curr_cost + 1;
             }
-		}          
+		}
     }
 
 	clock_t mid = clock();
